@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>แบบฟอร์มรายงานตัว — มาสาย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0D2B55;--navy2:#1A4080;--navy3:#2A5FA8;
+  --gold:#C99B3A;--gold2:#E8C06A;
+  --bg:#F0F4FA;--white:#fff;
+  --border:#D0DAF0;--text:#1A2840;--muted:#5A6A82;--light:#8A9AB8;
+  --danger:#C0392B;--success:#1E7E4A;
+  --radius:14px;--radius-sm:8px;
+}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* Header */
+.hdr{background:var(--navy);padding:20px 20px 28px;text-align:center;position:relative;}
+.hdr-logo{font-size:36px;margin-bottom:6px;}
+.hdr h1{font-family:'Prompt',sans-serif;font-size:18px;color:#fff;font-weight:600;}
+.hdr p{font-size:13px;color:rgba(255,255,255,0.6);margin-top:3px;}
+.hdr-wave{position:absolute;bottom:-1px;left:0;right:0;height:24px;
+  background:var(--bg);border-radius:50% 50% 0 0/100% 100% 0 0;}
+
+/* Card */
+.card{background:var(--white);border-radius:var(--radius);margin:20px 16px;
+  box-shadow:0 2px 16px rgba(13,43,85,0.10);overflow:hidden;}
+.card-hdr{background:var(--navy);padding:12px 18px;display:flex;align-items:center;gap:8px;}
+.card-hdr span{font-size:16px;}
+.card-hdr h2{font-size:14px;font-weight:500;color:#fff;}
+.card-body{padding:18px;}
+
+/* Fields */
+.field{margin-bottom:14px;}
+.field:last-child{margin-bottom:0;}
+label{display:block;font-size:12px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;}
+.req{color:var(--danger);}
+input,select{
+  width:100%;padding:12px 14px;font-family:'Sarabun',sans-serif;font-size:15px;
+  border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  background:#fff;color:var(--text);outline:none;
+  -webkit-appearance:none;appearance:none;
+  transition:border-color 0.15s,box-shadow 0.15s;
+}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235A6A82' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+input:focus,select:focus{border-color:var(--navy3);box-shadow:0 0 0 3px rgba(42,95,168,0.15);}
+
+/* Checkboxes */
+.check-group{display:flex;flex-direction:column;gap:8px;}
+.check-row{
+  display:flex;align-items:center;gap:10px;padding:11px 14px;
+  border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  background:#fff;cursor:pointer;transition:all 0.12s;
+}
+.check-row input[type=checkbox]{display:none;}
+.check-box{
+  width:20px;height:20px;border-radius:5px;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:all 0.12s;font-size:12px;color:transparent;
+}
+.check-row.active{border-color:var(--navy3);background:#EEF3FC;}
+.check-row.active .check-box{background:var(--navy);border-color:var(--navy);color:#fff;}
+.check-label{font-size:14px;color:var(--text);}
+
+/* Submit */
+.btn-submit{
+  display:block;width:calc(100% - 32px);margin:8px 16px 24px;
+  padding:16px;font-family:'Prompt',sans-serif;font-size:16px;font-weight:600;
+  background:var(--navy);color:#fff;border:none;border-radius:var(--radius);
+  cursor:pointer;transition:all 0.15s;letter-spacing:0.02em;
+}
+.btn-submit:active{transform:scale(0.97);background:var(--navy2);}
+
+/* Success screen */
+.success{display:none;text-align:center;padding:60px 24px;}
+.success .icon{font-size:64px;margin-bottom:16px;}
+.success h2{font-family:'Prompt',sans-serif;font-size:22px;color:var(--navy);margin-bottom:8px;}
+.success p{font-size:15px;color:var(--muted);line-height:1.6;}
+.success .name{font-weight:600;color:var(--navy2);}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);
+  background:var(--danger);color:#fff;padding:12px 20px;border-radius:99px;
+  font-size:14px;opacity:0;transition:all 0.25s;pointer-events:none;
+  white-space:nowrap;z-index:99;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Time display */
+.time-display{
+  background:var(--bg);border-radius:var(--radius-sm);padding:10px 14px;
+  font-size:13px;color:var(--muted);border:1.5px solid var(--border);
+}
+.time-display strong{color:var(--navy);font-size:15px;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-logo">🏫</div>
+  <h1>รายงานตัวนักศึกษามาสาย</h1>
+  <p>กรุณากรอกข้อมูลให้ครบถ้วน</p>
+  <div class="hdr-wave"></div>
+</div>
+
+<div id="form-area">
+  <!-- Time -->
+  <div class="card">
+    <div class="card-hdr"><span>🕐</span><h2>เวลาที่รายงานตัว</h2></div>
+    <div class="card-body">
+      <div class="time-display"><strong id="live-time">--:--:--</strong><br><span id="live-date"></span></div>
+    </div>
+  </div>
+
+  <!-- Personal -->
+  <div class="card">
+    <div class="card-hdr"><span>👤</span><h2>ข้อมูลส่วนตัว</h2></div>
+    <div class="card-body">
+      <div class="field">
+        <label>คำนำหน้า <span class="req">*</span></label>
+        <select id="f-prefix">
+          <option value="">-- เลือก --</option>
+          <option>นาย</option>
+          <option>นางสาว</option>
+          <option>นาง</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>ชื่อจริง <span class="req">*</span></label>
+        <input type="text" id="f-fname" placeholder="ชื่อจริง" inputmode="text"/>
+      </div>
+      <div class="field">
+        <label>นามสกุล <span class="req">*</span></label>
+        <input type="text" id="f-lname" placeholder="นามสกุล" inputmode="text"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Education -->
+  <div class="card">
+    <div class="card-hdr"><span>🎓</span><h2>ข้อมูลการศึกษา</h2></div>
+    <div class="card-body">
+      <div class="field">
+        <label>แผนกวิชา <span class="req">*</span></label>
+        <select id="f-dept">
+          <option value="">-- เลือกแผนก --</option>
+          <option>ช่างกลโรงงาน</option>
+          <option>ช่างไฟฟ้ากำลัง</option>
+          <option>ช่างก่อสร้าง</option>
+          <option>ช่างอิเล็กทรอนิกส์</option>
+          <option>อาหารและโภชนาการ</option>
+          <option>ช่างยนต์</option>
+          <option>ช่างเชื่อมโลหะ</option>
+          <option>เทคโนโลยีธุรกิจดิจิทัล</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>ระดับชั้น <span class="req">*</span></label>
+        <select id="f-level">
+          <option value="">-- เลือกระดับชั้น --</option>
+          <optgroup label="ปวช.">
+            <option>ปวช.1</option><option>ปวช.1/1</option><option>ปวช.1/2</option><option>ปวช.1/3</option>
+            <option>ปวช.2</option><option>ปวช.2/1</option>
+            <option>ปวช.3</option><option>ปวช.3/2</option><option>ปวช.3/3</option><option>ปวช.3ตกค้าง</option>
+          </optgroup>
+          <optgroup label="ปวส.">
+            <option>ปวส.1</option><option>ปวส.1/2</option>
+            <option>ปวส.2</option><option>ปวส.2/1</option><option>ปวส.3</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Remarks -->
+  <div class="card">
+    <div class="card-hdr"><span>⚠️</span><h2>ความผิดระเบียบ (ถ้ามี)</h2></div>
+    <div class="card-body">
+      <div class="check-group" id="check-group">
+        <label class="check-row" onclick="toggleCheck(this,'ไม่สวมเนกไท')">
+          <input type="checkbox"/><div class="check-box">✓</div>
+          <span class="check-label">👔 ไม่สวมเนกไท</span>
+        </label>
+        <label class="check-row" onclick="toggleCheck(this,'เข็มขัดผิดระเบียบ')">
+          <input type="checkbox"/><div class="check-box">✓</div>
+          <span class="check-label">🔗 เข็มขัดผิดระเบียบ</span>
+        </label>
+        <label class="check-row" onclick="toggleCheck(this,'รองเท้าผิดสี/ผิดทรง')">
+          <input type="checkbox"/><div class="check-box">✓</div>
+          <span class="check-label">👟 รองเท้าผิดสี/ผิดทรง</span>
+        </label>
+        <label class="check-row" onclick="toggleCheck(this,'ผมผิดระเบียบ')">
+          <input type="checkbox"/><div class="check-box">✓</div>
+          <span class="check-label">✂️ ผมผิดระเบียบ</span>
+        </label>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <label>หมายเหตุเพิ่มเติม</label>
+        <input type="text" id="f-remark" placeholder="ระบุรายละเอียด..." />
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-submit" onclick="submitForm()">✅ ส่งข้อมูล</button>
+</div>
+
+<!-- Success -->
+<div class="success" id="success-area">
+  <div class="icon">✅</div>
+  <h2>บันทึกข้อมูลสำเร็จ</h2>
+  <p>ระบบได้รับข้อมูลของ<br><span class="name" id="success-name"></span><br>เรียบร้อยแล้ว</p>
+  <p style="margin-top:16px;font-size:13px;color:var(--light)">สามารถปิดหน้านี้ได้</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let checked = new Set();
+
+function pad(n){ return String(n).padStart(2,'0'); }
+function updateClock(){
+  const now = new Date();
+  const days = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  document.getElementById('live-time').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} น.`;
+  document.getElementById('live-date').textContent = `วัน${days[now.getDay()]}ที่ ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()+543}`;
+}
+updateClock(); setInterval(updateClock, 1000);
+
+function toggleCheck(el, val){
+  el.classList.toggle('active');
+  if(checked.has(val)) checked.delete(val); else checked.add(val);
+  const rem = document.getElementById('f-remark');
+  const extra = rem.value.split(',').map(s=>s.trim()).filter(s=>s && ![...checked].includes(s));
+  rem.value = [...checked, ...extra].join(', ');
+}
+
+function toast(msg){ 
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'toast show';
+  setTimeout(() => el.className = 'toast', 2800);
+}
+
+async function submitForm(){
+  const prefix = document.getElementById('f-prefix').value;
+  const fname = document.getElementById('f-fname').value.trim();
+  const lname = document.getElementById('f-lname').value.trim();
+  const dept = document.getElementById('f-dept').value;
+  const level = document.getElementById('f-level').value;
+  const remark = document.getElementById('f-remark').value.trim();
+
+  if(!prefix||!fname||!lname||!dept||!level){ toast('⚠️ กรุณากรอกข้อมูลให้ครบ'); return; }
+
+  const btn = document.querySelector('.btn-submit');
+  btn.textContent = '⏳ กำลังส่ง...'; btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/submit', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({prefix,fname,lname,dept,level,remark})
+    });
+    const data = await res.json();
+    if(data.ok){
+      document.getElementById('form-area').style.display = 'none';
+      document.getElementById('success-name').textContent = `${prefix}${fname} ${lname}`;
+      document.getElementById('success-area').style.display = 'block';
+    } else {
+      toast(data.message || 'เกิดข้อผิดพลาด');
+      btn.textContent = '✅ ส่งข้อมูล'; btn.disabled = false;
+    }
+  } catch(e){
+    toast('❌ ไม่สามารถเชื่อมต่อได้');
+    btn.textContent = '✅ ส่งข้อมูล'; btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
